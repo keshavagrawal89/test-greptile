@@ -1,0 +1,28 @@
+version: '3.0'
+
+services:
+  app:
+    build:
+      context: ./app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+
+  db:
+    image: python:3.9
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: bash -c "pip install -r requirements.txt && python initialize_db.py"
